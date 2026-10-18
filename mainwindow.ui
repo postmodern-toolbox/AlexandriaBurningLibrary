@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AlexandriaBurningLibrary</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QHBoxLayout" name="buttonsLayout">
+      <item>
+       <widget class="QPushButton" name="newButton">
+        <property name="text">
+         <string>New</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="openButton">
+        <property name="text">
+         <string>Open</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="saveButton">
+        <property name="text">
+         <string>Save</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="syncButton">
+        <property name="text">
+         <string>Sync</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="pendriveStatus">
+      <property name="text">
+       <string>Pendrive status</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="2">
+       <widget class="QLabel" name="databaseDirectoriesLabel">
+        <property name="text">
+         <string>Music database directories</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="projectDirectoriesLabel">
+        <property name="text">
+         <string>Project directories</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <layout class="QVBoxLayout" name="directoriesMoveButtonsLayout">
+        <item>
+         <widget class="QPushButton" name="addToProject">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="go-previous"/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="removeFromProject">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="go-next"/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="moveUpInProject">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="go-up"/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="moveDownInProject">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="go-down"/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <widget class="QListWidget" name="projectDirectories"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QListWidget" name="databaseDirectories"/>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
