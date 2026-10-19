@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "projectconfiguratordialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -10,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->openButton->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
     ui->saveButton->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
     ui->syncButton->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
+
+    connect(ui->newButton, &QPushButton::clicked, this, &MainWindow::openConfigurationDialog);
 
     ui->addToProject->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
     ui->removeFromProject->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
@@ -32,5 +35,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::openConfigurationDialog() {
+    ProjectConfiguratorDialog dialog(this);
+    dialog.exec();
 }
 

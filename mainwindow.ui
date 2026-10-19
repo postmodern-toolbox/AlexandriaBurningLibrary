@@ -73,8 +73,14 @@
     </item>
     <item>
      <widget class="QLineEdit" name="pendriveStatus">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="text">
        <string>Pendrive status</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
