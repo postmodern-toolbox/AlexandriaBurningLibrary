@@ -13,7 +13,7 @@ public:
 
     QString key;
     QString path;
-    ConfigType type;
+    QString type;
 
 
 QString toString(ConfigType type);

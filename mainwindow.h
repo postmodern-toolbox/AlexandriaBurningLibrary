@@ -18,8 +18,21 @@ public:
     ~MainWindow();
 
     void openConfigurationDialog();
+    void updateStatus();
 
 private:
     Ui::MainWindow *ui;
+
+    QString databasePath;
+    QString projectsConfigsPath;
+
+
+    QString currentProjectName;
+    bool currentProjectDirty;
+    QString currentPendrivePath;
+    QString currentProjectType;
+
+
+
 };
 #endif // MAINWINDOW_H
