@@ -29,6 +29,7 @@ ProjectConfiguratorDialog::ProjectConfiguratorDialog(QWidget *parent)
 QStringList ProjectConfiguratorDialog::getAvailablePendrivePaths(){
     QStringList l;
     l.push_back("<do not intialize pendrive>");
+    l.push_back("C:\\ABLTest\\PENDRIVE_A");
     l.push_back("A:\\");
     l.push_back("E:\\");
     return l;
@@ -40,7 +41,7 @@ ProjectConfiguratorDialog::~ProjectConfiguratorDialog()
     delete ui;
 }
 
-ProjectConfig ProjectConfiguratorDialog::getProjectConfig() const{
+ProjectConfig ProjectConfiguratorDialog::getProjectConfig() const {
     ProjectConfig p;
     p.key = ui->configurationNameEdit->text();
     p.path = ui->pendrivePathCombo->currentText();

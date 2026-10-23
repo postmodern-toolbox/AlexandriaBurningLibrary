@@ -17,8 +17,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void openProjectConfigurationDialog();
     void openConfigurationDialog();
+
     void updateStatus();
+
+    void saveSettings();
+    void readSettings();
 
 private:
     Ui::MainWindow *ui;

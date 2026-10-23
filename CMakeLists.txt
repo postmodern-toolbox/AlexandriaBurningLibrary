@@ -25,6 +25,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         projectconfiguratordialog.h projectconfiguratordialog.cpp projectconfiguratordialog.ui
         projectconfig.h projectconfig.cpp
+        configuredialog.h configuredialog.cpp configuredialog.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET AlexandriaBurningLibrary APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

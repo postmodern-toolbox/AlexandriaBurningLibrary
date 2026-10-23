@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "projectconfiguratordialog.h"
+#include "configuredialog.h"
+
+#include <QSettings>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -15,7 +19,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->saveButton->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
     ui->syncButton->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
 
-    connect(ui->newButton, &QPushButton::clicked, this, &MainWindow::openConfigurationDialog);
+    connect(ui->newButton, &QPushButton::clicked, this, &MainWindow::openProjectConfigurationDialog);
+    connect(ui->configButton, &QPushButton::clicked, this, &MainWindow::openConfigurationDialog);
+
 
     ui->addToProject->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
     ui->removeFromProject->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
@@ -41,7 +47,7 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::openConfigurationDialog() {
+void MainWindow::openProjectConfigurationDialog() {
     ProjectConfiguratorDialog dialog(this);
     int ret = dialog.exec();
     if(ret) {
@@ -53,6 +59,34 @@ void MainWindow::openConfigurationDialog() {
         currentProjectDirty = true;
         updateStatus();
     }
+}
+void MainWindow::openConfigurationDialog() {
+    ConfigureDialog dialog(this);
+    // todo prefill with current values
+    int ret = dialog.exec();
+       if(ret) {
+           // todo if noempty
+           databasePath = dialog.getMusicDir();
+           projectsConfigsPath = dialog.getProjectsDir();
+       }
+}
+
+void MainWindow::saveSettings() {
+    // todo connect
+    QSettings settings(QCoreApplication::applicationDirPath() + "/AlexandriaBurningLibrary.ini", QSettings::IniFormat);
+    settings.setValue("abl/musicDir", databasePath);
+    settings.setValue("abl/projectsDir",projectsConfigsPath);
+    settings.sync();
+}
+
+void MainWindow::readSettings() {
+    //todo connect
+    QSettings settings(QCoreApplication::applicationDirPath() + "/AlexandriaBurningLibrary.ini", QSettings::IniFormat);
+    databasePath = settings.value("abl/musicDir").toString();
+    projectsConfigsPath = settings.value("abl/projectsDir").toString();
+    qDebug() << "database " << databasePath ;
+    qDebug() << "project " << projectsConfigsPath ;
+
 }
 
 void MainWindow::updateStatus() {
