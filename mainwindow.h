@@ -25,19 +25,24 @@ public:
     void saveSettings();
     void readSettings();
 
+    void loadDatabase();
+
+    void saveProject();
+    void loadProject();
+
+    void syncToPendrive();
 private:
     Ui::MainWindow *ui;
 
     QString databasePath;
     QString projectsConfigsPath;
 
-
     QString currentProjectName;
     bool currentProjectDirty;
     QString currentPendrivePath;
     QString currentProjectType;
 
-
+    bool pendriveOnline;
 
 };
 #endif // MAINWINDOW_H

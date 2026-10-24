@@ -17,6 +17,9 @@ public:
     QString getMusicDir() const;
     QString getProjectsDir() const;
 
+    void setMusicDir(const QString & text);
+    void setProjectsDir(const QString & text);
+
 
 private:
     Ui::ConfigureDialog *ui;

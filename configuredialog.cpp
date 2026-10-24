@@ -20,3 +20,10 @@ QString ConfigureDialog::getMusicDir() const {
 QString ConfigureDialog::getProjectsDir() const {
     return ui->projectDirBaseEdit->text();
 }
+void ConfigureDialog::setMusicDir(const QString & text) {
+    ui->musicBaseDirEdit->setText(text);
+}
+
+void ConfigureDialog::setProjectsDir(const QString & text) {
+    ui->projectDirBaseEdit->setText(text);
+}

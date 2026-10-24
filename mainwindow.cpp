@@ -9,9 +9,10 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , currentProjectDirty(false){
+    , currentProjectDirty(false)
+    , pendriveOnline(false)
+{
     ui->setupUi(this);
-    // TODO updateStatus?
 
     ui->configButton->setIcon(style()->standardIcon(QStyle::SP_DialogHelpButton));
     ui->newButton->setIcon(style()->standardIcon(QStyle::SP_FileDialogNewFolder));
@@ -21,6 +22,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->newButton, &QPushButton::clicked, this, &MainWindow::openProjectConfigurationDialog);
     connect(ui->configButton, &QPushButton::clicked, this, &MainWindow::openConfigurationDialog);
+    connect(ui->saveButton, &QPushButton::clicked, this, &MainWindow::saveProject);
+    connect(ui->openButton, &QPushButton::clicked, this, &MainWindow::loadProject);
+    connect(ui->syncButton, &QPushButton::clicked, this, &MainWindow::syncToPendrive);
 
 
     ui->addToProject->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
@@ -28,19 +32,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->moveUpInProject->setIcon(style()->standardIcon(QStyle::SP_ArrowUp));
     ui->moveDownInProject->setIcon(style()->standardIcon(QStyle::SP_ArrowDown));
 
-    // dummy values
-    for(int i=0; i<30; ++i) {
-        ui->projectDirectories->addItem(QString("Example line %1").arg(i));
-        ui->databaseDirectories->addItem(QString("Example line aaaa %1").arg(i));
+    readSettings();
+    loadDatabase();
+    //loadProject();
+    updateStatus();
 
-        if(i % 3 == 0) {
-            QListWidgetItem *colorRow = ui->projectDirectories->item(i);
-            if (colorRow) {
-                colorRow->setForeground(QBrush(QColor(0x0000FF)));
-            }
-        }
-
-    }
 }
 
 MainWindow::~MainWindow() {
@@ -62,25 +58,35 @@ void MainWindow::openProjectConfigurationDialog() {
 }
 void MainWindow::openConfigurationDialog() {
     ConfigureDialog dialog(this);
-    // todo prefill with current values
+    dialog.setMusicDir(databasePath);
+    dialog.setProjectsDir(projectsConfigsPath);
     int ret = dialog.exec();
-       if(ret) {
-           // todo if noempty
-           databasePath = dialog.getMusicDir();
-           projectsConfigsPath = dialog.getProjectsDir();
-       }
+    if(ret) {
+        // todo if noempty
+        databasePath = dialog.getMusicDir();
+        projectsConfigsPath = dialog.getProjectsDir();
+        //saveSettings();
+    }
 }
 
 void MainWindow::saveSettings() {
-    // todo connect
     QSettings settings(QCoreApplication::applicationDirPath() + "/AlexandriaBurningLibrary.ini", QSettings::IniFormat);
     settings.setValue("abl/musicDir", databasePath);
-    settings.setValue("abl/projectsDir",projectsConfigsPath);
+    settings.setValue("abl/projectsDir", projectsConfigsPath);
     settings.sync();
+    qDebug() << "save database " << databasePath ;
+    qDebug() << "save projectPath " << projectsConfigsPath ;
+}
+
+void MainWindow::saveProject() {
+    qDebug() << "save project " << currentProjectName ;
+    currentProjectDirty=false;
+    // TODO logic
+
+    updateStatus();
 }
 
 void MainWindow::readSettings() {
-    //todo connect
     QSettings settings(QCoreApplication::applicationDirPath() + "/AlexandriaBurningLibrary.ini", QSettings::IniFormat);
     databasePath = settings.value("abl/musicDir").toString();
     projectsConfigsPath = settings.value("abl/projectsDir").toString();
@@ -91,9 +97,49 @@ void MainWindow::readSettings() {
 
 void MainWindow::updateStatus() {
     QString status = QString("Project: %1, pendrive: %2, status: %3")
-                         .arg(currentProjectName)
-                         .arg("OFFLINE")
+                         .arg(currentProjectName.isEmpty()?"<none>":currentProjectName)
+                         .arg(pendriveOnline?"ONLINE":"OFFLINE")
                          .arg(currentProjectDirty?"CHANGED":"CLEAN");
     ui->projectStatus->setText(status);
 
+}
+
+void MainWindow::loadDatabase() {
+    // TODO dummy values
+    ui->databaseDirectories->clear();
+    for(int i=0; i<30; ++i) {
+        ui->databaseDirectories->addItem(QString("Example line aaaa %1").arg(i));
+    }
+}
+
+void MainWindow::loadProject() {
+    // TODO dummy values
+    currentProjectName="DUMMY";
+    currentProjectType="FLAT";
+    currentProjectDirty=false;
+
+    ui->projectDirectories->clear();
+    // TODO actual load
+    for(int i=0; i<30; ++i) {
+        ui->projectDirectories->addItem(QString("Example line %1").arg(i));
+        if(i % 3 == 0) {
+            QListWidgetItem *colorRow = ui->projectDirectories->item(i);
+            if (colorRow) {
+                colorRow->setForeground(QBrush(QColor(0x0000FF)));
+            }
+        }
+    }
+}
+
+void MainWindow::syncToPendrive() {
+    qDebug() << "syncToPendrive " ;
+    if(!pendriveOnline) {
+        qDebug() << "syncToPendrive fail: Pendrive OFFLINE" ;
+        return;
+    }
+    if(currentProjectDirty) {
+        qDebug() << "syncToPendrive fail: Project not saved" ;
+        return;
+    }
+    // TODO futher
 }
