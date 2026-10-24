@@ -20,6 +20,9 @@ public:
     void setMusicDir(const QString & text);
     void setProjectsDir(const QString & text);
 
+    void browseMusicDir();
+    void browseProjectDir();
+
 
 private:
     Ui::ConfigureDialog *ui;

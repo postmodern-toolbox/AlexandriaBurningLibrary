@@ -75,7 +75,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="projectDirBaseBrowseButton">
+  <widget class="QPushButton" name="musicBaseDirBrowseButton">
    <property name="geometry">
     <rect>
      <x>310</x>
@@ -88,7 +88,7 @@
     <string>Browse...</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="musicBaseDirBrowseButton">
+  <widget class="QPushButton" name="projectDirBaseBrowseButton">
    <property name="geometry">
     <rect>
      <x>310</x>

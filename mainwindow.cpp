@@ -65,7 +65,7 @@ void MainWindow::openConfigurationDialog() {
         // todo if noempty
         databasePath = dialog.getMusicDir();
         projectsConfigsPath = dialog.getProjectsDir();
-        //saveSettings();
+        saveSettings();
     }
 }
 
@@ -92,6 +92,11 @@ void MainWindow::saveProject() {
     qDebug() << "save project " << currentPendrivePath ;
     qDebug() << "save project " << currentProjectType ;
 
+    if(projectsConfigsPath.isEmpty()){
+        qWarning() << "current projectbase is empty" ;
+        return;
+    }
+
     if(currentProjectName.isEmpty()){
         qWarning() << "current project is empty" ;
         return;
@@ -103,7 +108,7 @@ void MainWindow::saveProject() {
     }
     QTextStream out(&file);
 
-    // TODO prevent saving in wring order, JSON?
+    // TODO prevent saving in wrong order, JSON?
     out << currentProjectName << "\n";
     out << currentPendrivePath << "\n";
     out << currentProjectType << "\n";
