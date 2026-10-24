@@ -4,7 +4,8 @@
 #include "configuredialog.h"
 
 #include <QSettings>
-
+#include <QFile>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -34,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     readSettings();
     loadDatabase();
-    //loadProject();
     updateStatus();
 
 }
@@ -78,14 +78,6 @@ void MainWindow::saveSettings() {
     qDebug() << "save projectPath " << projectsConfigsPath ;
 }
 
-void MainWindow::saveProject() {
-    qDebug() << "save project " << currentProjectName ;
-    currentProjectDirty=false;
-    // TODO logic
-
-    updateStatus();
-}
-
 void MainWindow::readSettings() {
     QSettings settings(QCoreApplication::applicationDirPath() + "/AlexandriaBurningLibrary.ini", QSettings::IniFormat);
     databasePath = settings.value("abl/musicDir").toString();
@@ -94,6 +86,74 @@ void MainWindow::readSettings() {
     qDebug() << "project " << projectsConfigsPath ;
 
 }
+
+void MainWindow::saveProject() {
+    qDebug() << "save project " << currentProjectName ;
+    qDebug() << "save project " << currentPendrivePath ;
+    qDebug() << "save project " << currentProjectType ;
+
+    if(currentProjectName.isEmpty()){
+        qWarning() << "current project is empty" ;
+        return;
+    }
+    QFile file(projectsConfigsPath+"/"+currentProjectName+".txt"); // TODO factory
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Cannot Open:" << file.errorString();
+        return;
+    }
+    QTextStream out(&file);
+
+    // TODO prevent saving in wring order, JSON?
+    out << currentProjectName << "\n";
+    out << currentPendrivePath << "\n";
+    out << currentProjectType << "\n";
+    // TODO PROJECT_DATA
+
+    file.close();
+
+    currentProjectDirty=false;
+    updateStatus();
+}
+
+void MainWindow::loadProject() {
+
+    QString loadProjectPath = QFileDialog::getOpenFileName(this, "Load Project", projectsConfigsPath);
+    if (loadProjectPath.isEmpty()) {
+        return; // canceled
+    }
+    QFile file(loadProjectPath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "Cannot open file" << file.errorString();
+        return;
+    }
+
+    // TODO JSON, validation
+    QTextStream in(&file);
+    currentProjectName = in.readLine();
+    currentPendrivePath = in.readLine();
+    currentProjectType = in.readLine();
+    // TODO PROJECT_DATA
+
+    file.close();
+    qDebug() << "load project " << currentProjectName ;
+    qDebug() << "load project " << currentPendrivePath ;
+    qDebug() << "load project " << currentProjectType ;
+
+    ui->projectDirectories->clear();
+
+    // TODO actual load
+    for(int i=0; i<30; ++i) {
+        ui->projectDirectories->addItem(QString("%1 Example line %2").arg(currentProjectName).arg(i));
+        if(i % 3 == 0) {
+            QListWidgetItem *colorRow = ui->projectDirectories->item(i);
+            if (colorRow) {
+                colorRow->setForeground(QBrush(QColor(0x0000FF)));
+            }
+        }
+    }
+    updateStatus();
+}
+
 
 void MainWindow::updateStatus() {
     QString status = QString("Project: %1, pendrive: %2, status: %3")
@@ -109,25 +169,6 @@ void MainWindow::loadDatabase() {
     ui->databaseDirectories->clear();
     for(int i=0; i<30; ++i) {
         ui->databaseDirectories->addItem(QString("Example line aaaa %1").arg(i));
-    }
-}
-
-void MainWindow::loadProject() {
-    // TODO dummy values
-    currentProjectName="DUMMY";
-    currentProjectType="FLAT";
-    currentProjectDirty=false;
-
-    ui->projectDirectories->clear();
-    // TODO actual load
-    for(int i=0; i<30; ++i) {
-        ui->projectDirectories->addItem(QString("Example line %1").arg(i));
-        if(i % 3 == 0) {
-            QListWidgetItem *colorRow = ui->projectDirectories->item(i);
-            if (colorRow) {
-                colorRow->setForeground(QBrush(QColor(0x0000FF)));
-            }
-        }
     }
 }
 
