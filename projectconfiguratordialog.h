@@ -23,6 +23,8 @@ private:
     Ui::ProjectConfiguratorDialog *ui;
 
     QStringList getAvailablePendrivePaths();
+
+    void validateSelectedPendrivePath(int i);
 };
 
 #endif // PROJECTCONFIGURATORDIALOG_H

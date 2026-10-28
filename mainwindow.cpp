@@ -20,12 +20,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->openButton->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
     ui->saveButton->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
     ui->syncButton->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
+    ui->connectButton->setIcon(style()->standardIcon(QStyle::SP_DriveNetIcon));
 
     connect(ui->newButton, &QPushButton::clicked, this, &MainWindow::openProjectConfigurationDialog);
     connect(ui->configButton, &QPushButton::clicked, this, &MainWindow::openConfigurationDialog);
     connect(ui->saveButton, &QPushButton::clicked, this, &MainWindow::saveProject);
     connect(ui->openButton, &QPushButton::clicked, this, &MainWindow::loadProject);
     connect(ui->syncButton, &QPushButton::clicked, this, &MainWindow::syncToPendrive);
+
 
 
     ui->addToProject->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
@@ -109,11 +111,8 @@ void MainWindow::saveProject() {
     QTextStream out(&file);
 
     // TODO prevent saving in wrong order, JSON?
-    out << currentProjectName << "\n";
-    out << currentPendrivePath << "\n";
-    out << currentProjectType << "\n";
-    // TODO PROJECT_DATA
-
+    out << currentProjectName << "|";
+    out << currentProjectType << "|";
     file.close();
 
     currentProjectDirty=false;
@@ -121,7 +120,6 @@ void MainWindow::saveProject() {
 }
 
 void MainWindow::loadProject() {
-
     QString loadProjectPath = QFileDialog::getOpenFileName(this, "Load Project", projectsConfigsPath);
     if (loadProjectPath.isEmpty()) {
         return; // canceled
@@ -134,9 +132,13 @@ void MainWindow::loadProject() {
 
     // TODO JSON, validation
     QTextStream in(&file);
-    currentProjectName = in.readLine();
-    currentPendrivePath = in.readLine();
-    currentProjectType = in.readLine();
+    QString metaData = in.readLine();
+    QStringList metaList = metaData.split("|");
+    if( metaList.size() == 2)
+    {
+        currentProjectName = metaList[0];
+        currentProjectType = metaList[1];
+    }
     // TODO PROJECT_DATA
 
     file.close();
