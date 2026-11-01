@@ -14,10 +14,11 @@ class ProjectConfiguratorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ProjectConfiguratorDialog(QWidget *parent = nullptr);
+    explicit ProjectConfiguratorDialog(QWidget *parent = nullptr, ProjectConfig * existingProjectConfig = nullptr);
     ~ProjectConfiguratorDialog();
 
     ProjectConfig getProjectConfig() const;
+    void accept() override;
 
 private:
     Ui::ProjectConfiguratorDialog *ui;

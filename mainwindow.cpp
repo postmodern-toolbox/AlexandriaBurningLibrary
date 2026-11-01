@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include "projectconfiguratordialog.h"
 #include "configuredialog.h"
+#include "pendrivesupport.h"
 
 #include <QSettings>
 #include <QFile>
@@ -21,19 +22,24 @@ MainWindow::MainWindow(QWidget *parent)
     ui->saveButton->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
     ui->syncButton->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
     ui->connectButton->setIcon(style()->standardIcon(QStyle::SP_DriveNetIcon));
+    ui->editButton->setIcon(style()->standardIcon(QStyle::SP_FileDialogEnd));
 
-    connect(ui->newButton, &QPushButton::clicked, this, &MainWindow::openProjectConfigurationDialog);
+    connect(ui->newButton, &QPushButton::clicked, this,  [this]() { doOpenProjectConfigurationDialog(true);});
     connect(ui->configButton, &QPushButton::clicked, this, &MainWindow::openConfigurationDialog);
     connect(ui->saveButton, &QPushButton::clicked, this, &MainWindow::saveProject);
     connect(ui->openButton, &QPushButton::clicked, this, &MainWindow::loadProject);
+    connect(ui->connectButton, &QPushButton::clicked, this, &MainWindow::connectPendrive);
     connect(ui->syncButton, &QPushButton::clicked, this, &MainWindow::syncToPendrive);
-
-
+    connect(ui->editButton, &QPushButton::clicked, this, [this]() { doOpenProjectConfigurationDialog(false);});
 
     ui->addToProject->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
     ui->removeFromProject->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
     ui->moveUpInProject->setIcon(style()->standardIcon(QStyle::SP_ArrowUp));
     ui->moveDownInProject->setIcon(style()->standardIcon(QStyle::SP_ArrowDown));
+
+    //when pendrive offline
+    ui->connectButton->setEnabled(false);
+
 
     readSettings();
     loadDatabase();
@@ -45,8 +51,17 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::openProjectConfigurationDialog() {
-    ProjectConfiguratorDialog dialog(this);
+void MainWindow::doOpenProjectConfigurationDialog(bool createNew)
+{
+    ProjectConfig existingProjectConfig;
+    ProjectConfig * existingProjectConfigPtr=nullptr;
+    if( not createNew )
+    {
+        //todo initalize dat shit
+        existingProjectConfigPtr = &existingProjectConfig;
+    }
+
+    ProjectConfiguratorDialog dialog(this, existingProjectConfigPtr);
     int ret = dialog.exec();
     if(ret) {
         // TODO if empty
@@ -55,9 +70,14 @@ void MainWindow::openProjectConfigurationDialog() {
         currentPendrivePath = p.path;
         currentProjectType = p.type;
         currentProjectDirty = true;
+
+        ui->projectDirectories->clear();
+
+        connectPendrive();
         updateStatus();
     }
 }
+
 void MainWindow::openConfigurationDialog() {
     ConfigureDialog dialog(this);
     dialog.setMusicDir(databasePath);
@@ -70,6 +90,8 @@ void MainWindow::openConfigurationDialog() {
         saveSettings();
     }
 }
+
+
 
 void MainWindow::saveSettings() {
     QSettings settings(QCoreApplication::applicationDirPath() + "/AlexandriaBurningLibrary.ini", QSettings::IniFormat);
@@ -111,8 +133,7 @@ void MainWindow::saveProject() {
     QTextStream out(&file);
 
     // TODO prevent saving in wrong order, JSON?
-    out << currentProjectName << "|";
-    out << currentProjectType << "|";
+    out << currentProjectName << "|" << currentProjectType ;
     file.close();
 
     currentProjectDirty=false;
@@ -120,6 +141,8 @@ void MainWindow::saveProject() {
 }
 
 void MainWindow::loadProject() {
+
+
     QString loadProjectPath = QFileDialog::getOpenFileName(this, "Load Project", projectsConfigsPath);
     if (loadProjectPath.isEmpty()) {
         return; // canceled
@@ -130,6 +153,13 @@ void MainWindow::loadProject() {
         return;
     }
 
+    ui->projectDirectories->clear();
+    pendriveOnline=false;
+    currentPendrivePath="";
+    currentProjectDirty=false;
+
+    // clearGui();
+
     // TODO JSON, validation
     QTextStream in(&file);
     QString metaData = in.readLine();
@@ -138,6 +168,8 @@ void MainWindow::loadProject() {
     {
         currentProjectName = metaList[0];
         currentProjectType = metaList[1];
+    } else {
+        return;
     }
     // TODO PROJECT_DATA
 
@@ -146,7 +178,6 @@ void MainWindow::loadProject() {
     qDebug() << "load project " << currentPendrivePath ;
     qDebug() << "load project " << currentProjectType ;
 
-    ui->projectDirectories->clear();
 
     // TODO actual load
     for(int i=0; i<30; ++i) {
@@ -158,6 +189,7 @@ void MainWindow::loadProject() {
             }
         }
     }
+    connectPendrive();
     updateStatus();
 }
 
@@ -169,6 +201,23 @@ void MainWindow::updateStatus() {
                          .arg(currentProjectDirty?"CHANGED":"CLEAN");
     ui->projectStatus->setText(status);
 
+}
+
+
+void MainWindow::connectPendrive() {
+    if(!currentProjectName.isEmpty()) {
+        QString pathToPendrive;
+        currentPendrivePath = PendriveSupport::searchPendriveForProject(currentProjectName);
+        if(!currentPendrivePath.isEmpty()){
+            pendriveOnline=true;
+            ui->connectButton->setEnabled(false);
+        } else {
+            // pendrive not found, might want to connect later
+            pendriveOnline=false;
+            ui->connectButton->setEnabled(true);
+        }
+        updateStatus();
+    }
 }
 
 void MainWindow::loadDatabase() {

@@ -7,14 +7,17 @@
 #define PENDRIVE_STATUS_OK ""
 #define PENDRIVE_STATUS_ERROR "Pendrive is not empty"
 
-ProjectConfiguratorDialog::ProjectConfiguratorDialog(QWidget *parent)
+ProjectConfiguratorDialog::ProjectConfiguratorDialog(QWidget *parent, ProjectConfig * existingProjectConfig)
     : QDialog(parent)
     , ui(new Ui::ProjectConfiguratorDialog)
 {
     ui->setupUi(this);
 
+    //todo use dat existingProjectConfig
 
     connect(ui->pendrivePathCombo, &QComboBox::activated, this, &ProjectConfiguratorDialog::validateSelectedPendrivePath);
+    //TODO disable if name is empty
+    //ui->pendriveConfigurationButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 
     // configuration name validaton: to be only uppercase and numbers
     ui->configurationNameEdit->setMaxLength(24);
@@ -31,6 +34,7 @@ ProjectConfiguratorDialog::ProjectConfiguratorDialog(QWidget *parent)
             cursorPosition -= (oldLength - newLength);
         }
         ui->configurationNameEdit->setCursorPosition(qMax(0, cursorPosition));
+
     });
 
     ui->pendrivePathCombo->addItems(getAvailablePendrivePaths());
@@ -49,6 +53,8 @@ void ProjectConfiguratorDialog::validateSelectedPendrivePath(int i)
     QString selectedPath = ui->pendrivePathCombo->itemText(i);
     bool statusOk = false;
 
+    // <do not initialize> is not blocking "OK" button
+    // otherwise selected pendrive must be empty
     statusOk=selectedPath == DO_NOT_INITIALIZE ? true : PendriveSupport::canPendriveBeInitialized(selectedPath);
 
     ui->pendriveConfigurationButtonBox->button(QDialogButtonBox::Ok)->setEnabled(statusOk);
@@ -67,3 +73,16 @@ ProjectConfig ProjectConfiguratorDialog::getProjectConfig() const {
     p.type = ui->pendriveTypeCombo->currentText();
     return p;
 }
+
+void ProjectConfiguratorDialog::accept()
+{
+    QString selectedPath = ui->pendrivePathCombo->currentText();
+    if (selectedPath != DO_NOT_INITIALIZE) {
+        PendriveSupport::initializePendrive(selectedPath,ui->configurationNameEdit->text());
+        // TODO
+        qDebug() << "wil initialize " << selectedPath << " project: " << ui->configurationNameEdit->text();
+    }
+    QDialog::accept();
+}
+
+

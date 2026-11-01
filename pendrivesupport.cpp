@@ -14,6 +14,7 @@ bool isPathPendrive(QString s){
 #endif
 //TODO LINUX
 }
+
 QStringList PendriveSupport::getAvailablePendrives() {
     QStringList list;
     list.push_back("C:\\ABLTest\\PENDRIVE_A"); // hardocded path for testing
@@ -28,10 +29,7 @@ QStringList PendriveSupport::getAvailablePendrives() {
         }
         qDebug() << "-----------------------------------------";
         qDebug() << "isPendrive: " <<   isPenDrive;
-        qDebug() << "Name:" << storage.name();
-        qDebug() << "Display Name:" << storage.displayName();
         qDebug() << "Root Path:" << storage.rootPath(); // Use this path to read/write files
-        qDebug() << "File System:" << storage.fileSystemType();
 
         if(isPenDrive) {
             list.push_back(root);
@@ -40,19 +38,39 @@ QStringList PendriveSupport::getAvailablePendrives() {
     return list;
 }
 
+// requirement: pendrive must be empty
+// TODO: text files are allowed
 bool PendriveSupport::canPendriveBeInitialized(const QString & path) {
-// TODO
-    qDebug() << "canPendriveBeInitialized hardcode: " << false;
-    return false;
+    QDir dir(path);
+    dir.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::Dirs);
+
+    bool res = dir.entryList().isEmpty();
+    qDebug() << " canPendriveBeInitialized for path: " << path << " : " << res;
+    return res;
 }
 
 QString PendriveSupport::searchPendriveForProject(const QString &projectName) {
-    //TODO
+    //QList<QStorageInfo> volumes = QStorageInfo::mountedVolumes();
+    qDebug() << "Searching for available pen drives...";
+    for (const QString &root : getAvailablePendrives()) {
+            QFileInfo checkFile(root+"/"+projectName+".txt");
+            if(checkFile.exists() && checkFile.isFile()) {
+                qDebug() << "FOUND path: " << root << " for project: " << projectName;
+                return root;
+        }
+    }
+    qDebug() << "NOT FOUND path for project: " << projectName;
     return QString();
 }
 
 bool PendriveSupport::initializePendrive(const QString &pathPendrive, const QString &projectName) {
-
-    // TODO
+    QFile file(pathPendrive+"/"+projectName+".txt");
+    // Create empty file
+    if (file.open(QIODevice::WriteOnly)) {
+        file.close();
+        return true;
+    } else {
+        qWarning() << " Cannot create file: " << pathPendrive+"/"+projectName+".txt";
+    }
     return false;
 }

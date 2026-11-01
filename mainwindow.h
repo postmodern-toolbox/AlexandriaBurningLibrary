@@ -17,7 +17,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void openProjectConfigurationDialog();
+    void doOpenProjectConfigurationDialog(bool createNew);
     void openConfigurationDialog();
 
     void updateStatus();
@@ -30,6 +30,7 @@ public:
     void saveProject();
     void loadProject();
 
+    void connectPendrive();
     void syncToPendrive();
 private:
     Ui::MainWindow *ui;
