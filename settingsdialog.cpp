@@ -1,40 +1,40 @@
-#include "configuredialog.h"
-#include "ui_configuredialog.h"
+#include "settingsdialog.h"
+#include "ui_settingsdialog.h"
 
 #include <QFileDialog>
 
-ConfigureDialog::ConfigureDialog(QWidget *parent)
+SettingsDialog::SettingsDialog(QWidget *parent)
     : QDialog(parent)
-    , ui(new Ui::ConfigureDialog)
+    , ui(new Ui::SettingsDialog)
 {
     ui->setupUi(this);
 
-    connect(ui->musicBaseDirBrowseButton, &QPushButton::clicked, this, &ConfigureDialog::browseMusicDir);
-    connect(ui->projectDirBaseBrowseButton, &QPushButton::clicked, this, &ConfigureDialog::browseProjectDir);
+    connect(ui->musicBaseDirBrowseButton, &QPushButton::clicked, this, &SettingsDialog::browseMusicDir);
+    connect(ui->projectDirBaseBrowseButton, &QPushButton::clicked, this, &SettingsDialog::browseProjectDir);
 
 }
 
-ConfigureDialog::~ConfigureDialog()
+SettingsDialog::~SettingsDialog()
 {
     delete ui;
 }
 
-QString ConfigureDialog::getMusicDir() const {
+QString SettingsDialog::getMusicDir() const {
     return ui->musicBaseDirEdit->text();
 }
 
-QString ConfigureDialog::getProjectsDir() const {
+QString SettingsDialog::getProjectsDir() const {
     return ui->projectDirBaseEdit->text();
 }
-void ConfigureDialog::setMusicDir(const QString & text) {
+void SettingsDialog::setMusicDir(const QString & text) {
     ui->musicBaseDirEdit->setText(text);
 }
 
-void ConfigureDialog::setProjectsDir(const QString & text) {
+void SettingsDialog::setProjectsDir(const QString & text) {
     ui->projectDirBaseEdit->setText(text);
 }
 
-void ConfigureDialog::browseMusicDir() {
+void SettingsDialog::browseMusicDir() {
     qDebug() << "browse MusicDir";
 
     QString musicDir = QFileDialog::getExistingDirectory(this, "Browse music dir",getMusicDir(),QFileDialog::ShowDirsOnly);
@@ -45,7 +45,7 @@ void ConfigureDialog::browseMusicDir() {
     ui->musicBaseDirEdit->setText(musicDir);
 }
 
-void ConfigureDialog::browseProjectDir() {
+void SettingsDialog::browseProjectDir() {
     qDebug() << " browse ProjectDir";
     QString projectDir = QFileDialog::getExistingDirectory(this, "Browse project dir",getProjectsDir(),QFileDialog::ShowDirsOnly);
     if(projectDir.isEmpty()){

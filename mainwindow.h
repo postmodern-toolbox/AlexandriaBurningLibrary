@@ -18,7 +18,7 @@ public:
     ~MainWindow();
 
     void doOpenProjectConfigurationDialog(bool createNew);
-    void openConfigurationDialog();
+    void openSettingsDialog();
 
     void updateStatus();
 

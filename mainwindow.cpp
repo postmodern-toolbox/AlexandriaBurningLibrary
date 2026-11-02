@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "projectconfiguratordialog.h"
-#include "configuredialog.h"
+#include "settingsdialog.h"
 #include "pendrivesupport.h"
 
 #include <QSettings>
@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->editButton->setIcon(style()->standardIcon(QStyle::SP_FileDialogEnd));
 
     connect(ui->newButton, &QPushButton::clicked, this,  [this]() { doOpenProjectConfigurationDialog(true);});
-    connect(ui->configButton, &QPushButton::clicked, this, &MainWindow::openConfigurationDialog);
+    connect(ui->configButton, &QPushButton::clicked, this, &MainWindow::openSettingsDialog);
     connect(ui->saveButton, &QPushButton::clicked, this, &MainWindow::saveProject);
     connect(ui->openButton, &QPushButton::clicked, this, &MainWindow::loadProject);
     connect(ui->connectButton, &QPushButton::clicked, this, &MainWindow::connectPendrive);
@@ -78,8 +78,8 @@ void MainWindow::doOpenProjectConfigurationDialog(bool createNew)
     }
 }
 
-void MainWindow::openConfigurationDialog() {
-    ConfigureDialog dialog(this);
+void MainWindow::openSettingsDialog() {
+    SettingsDialog dialog(this);
     dialog.setMusicDir(databasePath);
     dialog.setProjectsDir(projectsConfigsPath);
     int ret = dialog.exec();

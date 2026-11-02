@@ -1,19 +1,19 @@
-#ifndef CONFIGUREDIALOG_H
-#define CONFIGUREDIALOG_H
+#ifndef SETTINGSDIALOG_H
+#define SETTINGSDIALOG_H
 
 #include <QDialog>
 
 namespace Ui {
-class ConfigureDialog;
+class SettingsDialog;
 }
 
-class ConfigureDialog : public QDialog
+class SettingsDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit ConfigureDialog(QWidget *parent = nullptr);
-    ~ConfigureDialog();
+    explicit SettingsDialog(QWidget *parent = nullptr);
+    ~SettingsDialog();
     QString getMusicDir() const;
     QString getProjectsDir() const;
 
@@ -25,7 +25,7 @@ public:
 
 
 private:
-    Ui::ConfigureDialog *ui;
+    Ui::SettingsDialog *ui;
 };
 
-#endif // CONFIGUREDIALOG_H
+#endif // SETTINGSDIALOG_H
